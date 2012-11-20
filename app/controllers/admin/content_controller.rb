@@ -72,6 +72,12 @@ class Admin::ContentController < Admin::BaseController
       return    
     end
 
+    if params[:id] == params[:merge_id]
+      redirect_to :action => 'edit', :id => @article.id
+      flash[:error] = _("Cannot merge article with self!")
+      return    
+    end
+
     article_to_merge = find_article(params[:merge_id])
     if article_to_merge.nil?
       redirect_to :action => 'edit', :id => @article.id
@@ -80,7 +86,7 @@ class Admin::ContentController < Admin::BaseController
     end    
 
     begin
-      @article.merge_with(article_to_merge.id)
+      @article = @article.merge_with(article_to_merge.id)
     rescue => e
       redirect_to :action => 'edit', :id => @article.id
       flash[:error] = _("Error while merging article: #{e}")
@@ -88,7 +94,7 @@ class Admin::ContentController < Admin::BaseController
     end  
 
     set_the_flash    
-    redirect_to :action => 'edit', :id => @article.id
+    new_or_edit
   end
 
   def insert_editor
