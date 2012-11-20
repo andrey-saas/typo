@@ -200,7 +200,50 @@ class Admin::ContentController < Admin::BaseController
     @article.text_filter = current_user.text_filter if current_user.simple_editor?
 
     if request.post? and params[:merge_button] and params[:merge_with]
-      redirect_to :action => 'merge', :id => params[:id], :merge_id => params[:merge_with]
+#      redirect_to :action => 'merge', :id => params[:id], :merge_id => params[:merge_with]
+#      return
+      unless current_user.admin?
+        redirect_to :action => 'index'
+        flash[:error] = _("Error, you are not allowed to perform this action")
+        return    
+      end
+
+      @article = find_article(params[:id])
+      if @article.nil?
+        redirect_to :action => 'index'
+        flash[:error] = _("Error, invalid origin article ID specified!")
+        return
+      end    
+      
+      unless params[:merge_with]
+        redirect_to :action => 'edit', :id => @article.id
+        flash[:error] = _("Invalid article ID specified!")
+        return    
+      end
+
+      if params[:id] == params[:merge_with]
+        redirect_to :action => 'edit', :id => @article.id
+        flash[:error] = _("Cannot merge article with self!")
+        return    
+      end
+
+      article_to_merge = find_article(params[:merge_with])
+      if article_to_merge.nil?
+        redirect_to :action => 'edit', :id => @article.id
+        flash[:error] = _("Invalid article ID specified!")
+        return    
+      end    
+
+      begin
+        @article = @article.merge_with(article_to_merge.id)
+      rescue => e
+        redirect_to :action => 'edit', :id => @article.id
+        flash[:error] = _("Error while merging article: #{e}")
+        return    
+      end  
+
+      flash[:notice] = _('Article was successfully merged.')
+      redirect_to :action => 'edit', :id => @article.id
       return
     end
 
