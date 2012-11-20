@@ -88,7 +88,7 @@ class Admin::ContentController < Admin::BaseController
     end  
 
     set_the_flash    
-    redirect_to :action => 'index'
+    redirect_to :action => 'edit', :id => @article.id
   end
 
   def insert_editor
