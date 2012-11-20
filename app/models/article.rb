@@ -421,9 +421,9 @@ class Article < Content
     # Merge meaningful attributes and comments
 
     merge_article = Article.find(merge_article_id)
-    self.body = self.body + "\n" + merge_article.body
-    self.extended = self.extended + "\n" + merge_article.extended
-    self.excerpt = self.excerpt + "\n" + merge_article.excerpt
+    self.body = self.body + merge_article.body
+    self.extended = self.extended + merge_article.extended
+    self.excerpt = self.excerpt + merge_article.excerpt
     merge_article.comments.each do |comment|
       self.comments << comment
     end
