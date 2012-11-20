@@ -193,8 +193,8 @@ class Admin::ContentController < Admin::BaseController
     @article = Article.get_or_build_article(id)
     @article.text_filter = current_user.text_filter if current_user.simple_editor?
 
-    if request.post? and params[:merge_button] and params[:merge] and params[:merge][:with]
-      redirect_to :action => 'merge', :id => params[:id], :merge_id => params[:merge][:with]
+    if request.post? and params[:merge_button] and params[:merge_with]
+      redirect_to :action => 'merge', :id => params[:id], :merge_id => params[:merge_with]
       return
     end
 
